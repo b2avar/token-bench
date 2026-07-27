@@ -26,6 +26,12 @@ It does **not** measure bundle size, runtime performance, or dependencies. Libra
 
 File weight varies enormously between codebases; duplication came back at 0–6% across all of them. That's why edit cost is the headline metric and duplication is a secondary check — though a 0% there is a useful answer in its own right.
 
+### The prediction has been checked against reality
+
+`SPLIT CANDIDATES` claims a file will cost less to edit once split. That claim was tested end to end on a shipped app: a 4,266-line lesson-data module measured at 75,518 tokens, with a predicted post-split cost of 6,567.
+
+It was then actually split — one file per lesson, plus a barrel re-exporting the same names. Measured against `count_tokens`, the median resulting file came to **6,281 tokens: 4% off the prediction**. All fourteen declarations came out byte-identical, the build passed, all 48 tests passed, and every chunk in the production bundle kept the same size. Editing one lesson went from 75,518 tokens to 6,281 — a 12× reduction, for 1,137 tokens (1.5%) of duplicated imports and barrel overhead.
+
 ## Output
 
 ```
@@ -156,6 +162,8 @@ Also exported: `scan`, `approxTokens`, `analyzeEditCost`, `shapeOfFile`, `isTest
 **Duplication (secondary).** JSX subtrees are reduced to a structural signature — tag names, sorted attribute names, static attribute values — with text and expression leaves wildcarded. Two subtrees sharing a signature are the same component written twice. A leaf holding the same value in every occurrence stays inside the component; only leaves that *differ* are charged as props, so five copy-pasted screens differing in one heading are a 1-prop component, not a 29-prop one. Blocks varying in more than `--max-props` places are rejected — that's a page, not a component — which lets the genuine repeats nested inside surface. Nesting is claimed outermost-first so nothing is counted twice, and class strings inside a claimed block are excluded from the class-string section.
 
 Savings are net of the work: `N·T − Σ(call sites) − (T + 22 + 4P)` for `N` occurrences of a `T`-token block with `P` props.
+
+**Single-file components.** `.vue` and `.svelte` are scanned by default and their **edit cost is exact** — that figure is just file size. But the parser is a JS/TS parser, so it cannot read the structure of a single-file component: no units, no split candidates, no duplication for those files. The report says so explicitly rather than showing an empty result that reads as "clean", and such files are kept out of the split/monolithic lists entirely, since neither label would be a claim the tool can support.
 
 **What this doesn't measure.** File content only, and only what is visible in the scanned scope. An agent's real session also spends tokens on the system prompt, tool output, and conversation history — and prompt caching discounts re-reads to roughly 0.1×, so the practical win of a smaller file is more about context headroom than about the bill.
 

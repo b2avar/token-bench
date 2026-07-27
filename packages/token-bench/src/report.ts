@@ -174,6 +174,19 @@ export const printReport = (a: Analysis, top: number) => {
     out.push('')
   }
 
+  if (ec.unparsed.length) {
+    out.push(
+      C.yellow(`  ${ec.unparsed.length} file(s) could not be parsed as JS/TS`) +
+        C.dim(` — ${ec.unparsed.slice(0, 3).map((p) => p.split('/').pop()).join(', ')}${ec.unparsed.length > 3 ? ', …' : ''}`),
+    )
+    out.push(
+      C.dim('  Their edit cost above is exact, but split candidates and duplication'),
+    )
+    out.push(C.dim('  analysis cannot see inside them. Single-file components (.vue, .svelte)'))
+    out.push(C.dim('  are the usual reason; pass --ext to scan only what the parser handles.'))
+    out.push('')
+  }
+
   if (ec.testShare > 0.25) {
     out.push(
       C.yellow(`  ${Math.round(ec.testShare * 100)}% of the scanned tokens are test files.`) +

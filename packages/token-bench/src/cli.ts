@@ -137,6 +137,7 @@ if (json) {
           medianSaving: result.editCost.medianSaving,
           totalSaving: result.editCost.totalSaving,
           testShare: result.editCost.testShare,
+          unparsed: result.editCost.unparsed,
           splittable: result.editCost.splittable.map(({ units, ...s }) => ({ ...s, units: units.length })),
           monolithic: result.editCost.monolithic.map(({ units, ...s }) => ({ ...s, largest: units[0]?.name ?? null })),
         },

@@ -1,6 +1,6 @@
 {
   "name": "token-bench",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Measure what it costs an AI coding agent to work in your codebase. An agent reads a whole file to change any part of it, so token-bench reports that per-file edit cost in Claude's own tokens and flags which files are worth splitting.",
   "keywords": [
     "tokens",

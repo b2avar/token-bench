@@ -10,6 +10,12 @@ export interface Unit {
 export interface FileShape {
   path: string
   tokens: number
+  /**
+   * False when the file could not be parsed as JS/TS — a `.vue` or `.svelte`
+   * single-file component, say. Edit cost is still exact for these, but unit
+   * and duplication analysis cannot see inside them.
+   */
+  parsed: boolean
   units: Unit[]
   /** Tokens not belonging to any top-level unit: imports, constants, types. */
   preambleTokens: number
@@ -69,6 +75,7 @@ export const shapeOfFile = (file: ScannedFile): FileShape => {
   const empty: FileShape = {
     path: file.path,
     tokens: file.tokens,
+    parsed: false,
     units: [],
     preambleTokens: file.tokens,
     largestShare: 0,
@@ -99,7 +106,7 @@ export const shapeOfFile = (file: ScannedFile): FileShape => {
     units.push({ name, tokens })
   }
 
-  if (units.length === 0) return empty
+  if (units.length === 0) return { ...empty, parsed: true }
 
   const unitTokens = units.reduce((sum, u) => sum + u.tokens, 0)
   const preambleTokens = Math.max(0, file.tokens - unitTokens)
@@ -108,6 +115,7 @@ export const shapeOfFile = (file: ScannedFile): FileShape => {
   return {
     path: file.path,
     tokens: file.tokens,
+    parsed: true,
     units: [...units].sort((a, b) => b.tokens - a.tokens),
     preambleTokens,
     largestShare: file.tokens ? largest / file.tokens : 0,
@@ -143,6 +151,8 @@ export interface EditCostReport {
   totalSaving: number
   /** Share of scanned tokens sitting in test files. */
   testShare: number
+  /** Files whose structure could not be read — .vue, .svelte, syntax errors. */
+  unparsed: string[]
 }
 
 const percentile = (values: number[], p: number) => {
@@ -162,7 +172,9 @@ export const analyzeEditCost = (
   const shapes = files.map(shapeOfFile)
   const costs = shapes.map((s) => s.tokens)
 
-  const expensive = shapes.filter((s) => s.tokens > editCostFloor)
+  // A file we could not parse is not "one oversized unit" — we simply cannot
+  // see inside it. Classifying it either way would be a claim we can't make.
+  const expensive = shapes.filter((s) => s.tokens > editCostFloor && s.parsed)
   const monolithic = expensive
     .filter((s) => s.units.length <= 1 || s.largestShare > monolithShare)
     .sort((a, b) => b.tokens - a.tokens)
@@ -181,5 +193,6 @@ export const analyzeEditCost = (
     medianSaving: median(savings),
     totalSaving: savings.reduce((sum, n) => sum + n, 0),
     testShare: scannedTokens ? testTokens / scannedTokens : 0,
+    unparsed: shapes.filter((s) => !s.parsed).map((s) => s.path),
   }
 }
