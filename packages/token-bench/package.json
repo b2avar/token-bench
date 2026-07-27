@@ -1,0 +1,59 @@
+{
+  "name": "token-bench",
+  "version": "0.1.0",
+  "description": "Measure how many tokens AI agents spend reading your codebase. Finds repeated Tailwind class patterns and reports how much you'd save by extracting them into components.",
+  "keywords": [
+    "tokens",
+    "llm",
+    "ai",
+    "tailwind",
+    "codebase",
+    "analysis",
+    "claude",
+    "context"
+  ],
+  "license": "MIT",
+  "author": "Burak Avar",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/b2avar/token-bench.git",
+    "directory": "packages/token-bench"
+  },
+  "homepage": "https://github.com/b2avar/token-bench#readme",
+  "bugs": "https://github.com/b2avar/token-bench/issues",
+  "type": "module",
+  "bin": {
+    "token-bench": "dist/cli.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
+    "@babel/parser": "^7.29.7",
+    "@babel/types": "^7.29.7",
+    "js-tiktoken": "^1.0.21"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "typescript": "~5.9.3"
+  }
+}

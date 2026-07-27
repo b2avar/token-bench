@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.tsbuildinfo
+
+# local tooling / IDE config
+.claude/
+.idea/
+.vscode/
+.DS_Store
+
+# scratch output from the benchmark
+examples/ui-layer/bench/.*.html

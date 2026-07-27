@@ -1,0 +1,31 @@
+{
+  "name": "ui-layer",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc -b --noEmit",
+    "bench": "node bench/measure.mjs",
+    "diff": "git diff --no-index bench/a-baseline/VisitorList.tsx bench/b-optimized/VisitorList.tsx || true",
+    "diff:side": "diff -y --width=220 bench/a-baseline/VisitorList.tsx bench/b-optimized/VisitorList.tsx || true",
+    "diff:dom": "vite-node bench/diff.tsx"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/node": "^26.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.0.4",
+    "js-tiktoken": "^1.0.21",
+    "tailwindcss": "^4.1.14",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.9",
+    "vite-node": "^6.0.0"
+  }
+}

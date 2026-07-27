@@ -1,0 +1,16 @@
+{
+  "name": "token-bench-monorepo",
+  "private": true,
+  "version": "0.0.0",
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=token-bench",
+    "bench": "npm run bench --workspace=ui-layer",
+    "dev": "npm run dev --workspace=ui-layer",
+    "scan": "npm run build --workspace=token-bench && node packages/token-bench/dist/cli.js examples/ui-layer",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}
