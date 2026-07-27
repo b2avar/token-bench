@@ -22,21 +22,25 @@ export interface FileShape {
   splitEditCost: number
 }
 
+/**
+ * A unit is anything declared at the top level that could live in its own
+ * file. That includes data — a large exported constant is exactly as movable
+ * as a component, and in content-heavy files it is most of the weight.
+ */
 const nameOf = (node: Node): string | null => {
   switch (node.type) {
     case 'FunctionDeclaration':
     case 'ClassDeclaration':
+    case 'TSEnumDeclaration':
+    case 'TSInterfaceDeclaration':
       return node.id?.name ?? null
+    case 'TSTypeAliasDeclaration':
+      return node.id.name
+    case 'TSModuleDeclaration':
+      return node.id.type === 'Identifier' ? node.id.name : null
     case 'VariableDeclaration': {
       const first = node.declarations[0]
-      if (!first) return null
-      const init = first.init
-      if (!init) return null
-      const isCallable =
-        init.type === 'ArrowFunctionExpression' ||
-        init.type === 'FunctionExpression' ||
-        init.type === 'CallExpression'
-      if (!isCallable) return null
+      if (!first || !first.init) return null
       return first.id.type === 'Identifier' ? first.id.name : null
     }
     default:

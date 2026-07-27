@@ -158,7 +158,12 @@ export const printReport = (a: Analysis, top: number) => {
   out.push(C.dim('  ' + '─'.repeat(66)))
   const pct = (n: number) => (a.totalTokens ? Math.round((100 * n) / a.totalTokens) : 0)
 
-  if (ec.splittable.length > 0) {
+  if (ec.splittable.length === 1) {
+    out.push(
+      `  Splitting the one candidate above takes ${C.green(C.bold(num(ec.totalSaving) + ' tokens'))} off every edit in it.`,
+    )
+    out.push('')
+  } else if (ec.splittable.length > 1) {
     out.push(
       `  Editing one of the ${ec.splittable.length} split candidates costs ${C.green(C.bold(num(ec.medianSaving) + ' tokens'))} less once split`,
     )
