@@ -16,6 +16,12 @@ const num = (n: number) => n.toLocaleString('en-US')
 const pad = (v: string | number, n: number) => String(v).padStart(n)
 const truncate = (s: string, n: number) => (s.length <= n ? s : s.slice(0, n - 1) + '…')
 
+/**
+ * Paths are truncated from the left: in a deep tree the filename is the part
+ * you need to act on, and cutting the tail throws it away.
+ */
+const truncatePath = (path: string, n: number) => (path.length <= n ? path : '…' + path.slice(-(n - 1)))
+
 export interface Analysis {
   root: string
   files: ScannedFile[]
@@ -69,7 +75,7 @@ export const printReport = (a: Analysis, top: number) => {
   out.push('')
   for (const f of a.files.slice(0, top)) {
     const share = a.totalTokens ? Math.round((100 * f.tokens) / a.totalTokens) : 0
-    out.push(`  ${pad(num(f.tokens), 8)}  ${pad(share + '%', 4)}  ${C.dim(truncate(f.path, 50))}`)
+    out.push(`  ${pad(num(f.tokens), 8)}  ${pad(share + '%', 4)}  ${C.dim(truncatePath(f.path, 52))}`)
   }
   out.push('')
 
@@ -79,7 +85,7 @@ export const printReport = (a: Analysis, top: number) => {
     out.push(C.dim(`  ${pad('now', 8)}  ${pad('after', 8)}  ${pad('units', 5)}  file`))
     for (const f of ec.splittable.slice(0, top)) {
       out.push(
-        `  ${pad(num(f.tokens), 8)}  ${C.green(pad(num(f.splitEditCost), 8))}  ${pad(f.units.length, 5)}  ${C.dim(truncate(f.path, 38))}`,
+        `  ${pad(num(f.tokens), 8)}  ${C.green(pad(num(f.splitEditCost), 8))}  ${pad(f.units.length, 5)}  ${C.dim(truncatePath(f.path, 40))}`,
       )
     }
     out.push('')
@@ -92,7 +98,7 @@ export const printReport = (a: Analysis, top: number) => {
     for (const f of ec.monolithic.slice(0, top)) {
       const biggest = f.units[0]
       out.push(
-        `  ${pad(num(f.tokens), 8)}  ${pad(Math.round(f.largestShare * 100) + '%', 7)}  ${C.dim(truncate(f.path, 34))}${biggest ? C.dim(`  ${biggest.name}`) : ''}`,
+        `  ${pad(num(f.tokens), 8)}  ${pad(biggest ? Math.round(f.largestShare * 100) + '%' : '—', 7)}  ${C.dim(truncatePath(f.path, 40))}${biggest ? C.dim(`  ${biggest.name}`) : C.dim('  (no top-level units)')}`,
       )
     }
     out.push('')
@@ -138,7 +144,7 @@ export const printReport = (a: Analysis, top: number) => {
     if (dm.fileCount > 1) {
       out.push(C.yellow('  Collect these in a single theme module so screen files carry no dark: at all.'))
       for (const f of dm.files.slice(0, 5)) {
-        out.push(C.dim(`    ${pad(f.count, 5)}  ${truncate(f.path, 55)}`))
+        out.push(C.dim(`    ${pad(f.count, 5)}  ${truncatePath(f.path, 55)}`))
       }
     } else if (a.files.length > 1) {
       out.push(C.green(`  Centralized in one file (${dm.files[0]?.path}).`))
@@ -176,7 +182,10 @@ export const printReport = (a: Analysis, top: number) => {
     out.push(`  Repeated JSX blocks        ${pad(num(a.blockSavings), 8)} tokens  (${pct(a.blockSavings)}%)`)
     out.push(`  Repeated class strings     ${pad(num(a.classSavings), 8)} tokens  (${pct(a.classSavings)}%)`)
     if (a.marginalSavings > 0) {
-      out.push(C.dim(`  Each further reuse saves another ${num(a.marginalSavings)}.`))
+      out.push(
+        C.dim(`  Reusing every one of those components once more would save a further ${num(a.marginalSavings)}`),
+      )
+      out.push(C.dim('  on top, since their definitions are already paid for.'))
     }
   } else {
     out.push(C.dim('  No significant duplication — the repetition lever does not apply here.'))
