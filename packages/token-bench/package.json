@@ -1,16 +1,20 @@
 {
   "name": "token-bench",
-  "version": "0.1.0",
-  "description": "Measure how many tokens AI agents spend reading your codebase. Finds repeated Tailwind class patterns and reports how much you'd save by extracting them into components.",
+  "version": "0.1.1",
+  "description": "Measure what it costs an AI coding agent to work in your codebase. An agent reads a whole file to change any part of it, so token-bench reports that per-file edit cost in Claude's own tokens and flags which files are worth splitting.",
   "keywords": [
     "tokens",
+    "token-count",
     "llm",
     "ai",
-    "tailwind",
-    "codebase",
-    "analysis",
     "claude",
-    "context"
+    "agent",
+    "codebase",
+    "code-analysis",
+    "context-window",
+    "refactor",
+    "react",
+    "typescript"
   ],
   "license": "MIT",
   "author": "Burak Avar",
