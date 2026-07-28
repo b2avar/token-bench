@@ -1,5 +1,8 @@
 # token-bench
 
+[![ci](https://github.com/b2avar/token-bench/actions/workflows/ci.yml/badge.svg)](https://github.com/b2avar/token-bench/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/token-bench)](https://www.npmjs.com/package/token-bench)
+
 Measure what it costs an AI coding agent to work in your codebase.
 
 ```bash
