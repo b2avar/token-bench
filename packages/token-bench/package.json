@@ -47,7 +47,8 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json && node -e \"require('fs').chmodSync('dist/cli.js', 0o755)\"",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.test.json",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
@@ -58,6 +59,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.0.0",
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "vitest": "^3.2.7"
   }
 }

@@ -1,0 +1,25 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run -w packages/token-bench build
+      - run: npm run -w packages/token-bench typecheck
+      - run: npm run -w packages/token-bench test
+
+      # The tool holds itself to the budget it recommends: set just above
+      # today's worst file, then ratcheted down as the code gets lighter.
+      - name: token budget
+        run: node packages/token-bench/dist/cli.js packages/token-bench/src --max-file 3000
